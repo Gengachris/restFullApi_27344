@@ -92,6 +92,17 @@ public class StudentController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    @DeleteMapping("/{studentId}")
+    public ResponseEntity<String> deleteStudent(@PathVariable Long studentId) {
+        boolean removed = students.removeIf(s -> s.getStudentId().equals(studentId));
+
+        if (removed) {
+            return new ResponseEntity<>("Student deleted successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
 
 

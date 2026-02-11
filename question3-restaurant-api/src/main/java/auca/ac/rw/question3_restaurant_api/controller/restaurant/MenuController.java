@@ -88,15 +88,20 @@ public class MenuController {
         return new ResponseEntity<>(menuItem, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}/availability")
-    public ResponseEntity<MenuItem> toggleAvailability(@PathVariable Long id) {
-        Optional<MenuItem> menuItem = menuItems.stream()
+    @PutMapping("/{id}")
+    public ResponseEntity<MenuItem> updateMenuItem(@PathVariable Long id, @RequestBody MenuItem updatedMenuItem) {
+        Optional<MenuItem> existingMenuItem = menuItems.stream()
                 .filter(item -> item.getId().equals(id))
                 .findFirst();
 
-        if (menuItem.isPresent()) {
-            MenuItem item = menuItem.get();
-            item.setAvailable(!item.isAvailable());
+        if (existingMenuItem.isPresent()) {
+            MenuItem item = existingMenuItem.get();
+            item.setName(updatedMenuItem.getName());
+            item.setDescription(updatedMenuItem.getDescription());
+            item.setPrice(updatedMenuItem.getPrice());
+            item.setCategory(updatedMenuItem.getCategory());
+            item.setAvailable(updatedMenuItem.isAvailable());
+
             return new ResponseEntity<>(item, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -104,13 +109,13 @@ public class MenuController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeMenuItem(@PathVariable Long id) {
+    public ResponseEntity<String> removeMenuItem(@PathVariable Long id) {
         boolean removed = menuItems.removeIf(item -> item.getId().equals(id));
 
         if (removed) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>("Menu item deleted successfully", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Menu item not found", HttpStatus.NOT_FOUND);
         }
     }
 }
